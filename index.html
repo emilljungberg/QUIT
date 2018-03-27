@@ -117,6 +117,7 @@
             <li><a href="#installation">Installation</a></li>
             <li><a href="#compile-from-source">Compile From Source</a></li>
             <li><a href="#general-usage">General Usage</a></li>
+            <li><a href="#common-options">Common Options</a></li>
             <li><a href="#file-formats">File Formats</a></li>
             <li><a href="#scripting">Scripting</a></li>
     </ul>
@@ -136,7 +137,10 @@
 <li><a href="Utilities/">Utilities</a></li>
 </ul>
 <h2 id="installation">Installation</h2>
-<p>Compiled binaries are provided for Mac and Linux and can be found on the github releases page. These are provided in <code>.tar.gz</code> archive. After extraction, you need to ensure that the binaries are accessible via your <code>PATH</code> variable. Either edit your shell profile (e.g. <code>.bashrc</code>) and add the QUIT directory your <code>PATH</code> variable there, or copy the files to somewhere that will be on your path, e.g. <code>/usr/local/bin</code> (this will likely require <code>sudo</code> permissions).</p>
+<p>Pre-compiled binaries are provided for Linux and Mac OS X in a .tar.gz archive from http://github.com/spinicist/QUIT/releases.</p>
+<p>Download the correct archive for your platform, untar it and then ensure that the binaries can be found via your <code>PATH</code> environment variable. Either edit your shell profile (e.g. <code>.bashrc</code>) and add the QUIT directory your <code>PATH</code> variable there, or copy the files to somewhere that will be on your path, e.g. <code>/usr/local/bin</code> (this will likely require <code>sudo</code> permissions).</p>
+<p>The Linux binaries are built with Ubuntu 14.04 with GCC 6. If you need to run on an older version of Linux with a previous version of <code>glibc</code> then you will need to
+compile from source.</p>
 <h2 id="compile-from-source">Compile From Source</h2>
 <p>See the <a href="Developer/">developer documentation</a></p>
 <h2 id="general-usage">General Usage</h2>
@@ -196,6 +200,34 @@ SPGR FILE was not specified. Use --help to see usage.
 </code></pre>
 
 <p>then (provided your input data does contain two volumes corresponding to flip-angles 3 and 18 degrees) then DESPOT1 will run, and you should see two files created (<code>D1_T1.nii.gz</code> and <code>D1_PD.nii.gz</code>). If you want to see what the programs are doing while running, specify the <code>--verbose</code> or <code>-v</code> options.</p>
+<h2 id="common-options">Common Options</h2>
+<p>The following options are supported by most, but not necessarily all, QUIT programs.</p>
+<ul>
+<li>
+<p><code>--out, -o</code></p>
+<p>Add a prefix to the output parameter files. By default, most QUIT programs write their output files using filenames in a pattern <code>PROGRAM_PARAMETER.nii.gz</code>. They will overwrite any existing files with the same names. If you need to save the output from multiple runs of the same program, or want to save output to a particular directory, use this option to add an addtional prefix to the output names.</p>
+</li>
+<li>
+<p><code>--mask, -m</code></p>
+<p>Specify a mask file, where non-zero values indicate that voxels should be processed, and zero values indicate that voxels should not be processed. The background voxels will be set to zero in the final image. This is useful for two reasons, first is to simply speed up processing for long-running programs (e.g. <code>qimcdespot</code>), second is that outside the head fitting data is non-sensical, as there is no signal. Hence these regions appear very noisy on output maps, which can make visualization difficult.</p>
+</li>
+<li>
+<p><code>--threads, -t</code></p>
+<p>Control the maximum number of threads used. The majority of QUIT programs are multi-threaded across voxels to improve processing times. In some parallel computing environments (e.g. Sun Grid Engine), it is possible to set the maximum number of cores available to a program, and it is hence good for CPU utilisation to match the number of threads to the number of cores. The default is 4. Note that HyperThreading may make the number of logical cores appear to be double the number of physical cores - QUIT programs are CPU bound, not IO bound, and hence gain no benefit from HyperThreading. You are better to specify the number of physical cores available rather than the number of logical cores.</p>
+</li>
+<li>
+<p><code>--subregion, -s</code></p>
+<p>Similar to <code>--mask</code>, this command will only process a sub-region of the input images. The argument needs to be in the format <code>"start_i,start_j,start_k,size_i,size_j,size_k"</code> where <code>i,j,k</code> are voxel indices (not physical co-ordinates). This is useful to speed up processing for trial-runs of pipelines.</p>
+</li>
+<li>
+<p><code>--resids, -r</code></p>
+<p>Most QUIT programs will write out a single root-sum-squared residual image along with their parameter maps. Use this option to also output residuals for each data-point to look for systematic offsets. Note that if multiple inputs are specified (e.g. <code>qimcdespot</code>), then this option will write out a single cocatenated file for all input data-points in order.</p>
+</li>
+<li>
+<p><code>--B1, -b</code> &amp; <code>--f0, -f</code></p>
+<p>Several of the QUIT programs take B1 (relative flip-angle) and f0 (off-resonance in Hz) maps as correction factors.</p>
+</li>
+</ul>
 <h2 id="file-formats">File Formats</h2>
 <p>By default, QUIT is compiled with support for NIFTI and NRRD formats. The preferred file-format is NIFTI for compatibility with FSL and SPM. By default QUIT will output <code>.nii.gz</code> files. This can be controlled by the <code>QUIT_EXT</code> environment variable. Valid values for this are any file extension supported by ITK that QUIT has been compiled to support, e.g. <code>.nii</code> or <code>.nrrd</code>, or the FSL values <code>NIFTI</code>, <code>NIFTI_PAIR</code>, <code>NIFTI_GZ</code>, <code>NIFTI_PAIR_GZ</code>.</p>
 <p>The <a href="http://itk.org">ITK</a> library supports a much wider variety of file formats, but adding support for all of these almost triples the size of the compiled binaries. Hence by default they are excluded. You can add support for more file formats by compiling QUIT yourself, see the <a href="Developer/">developer documentation</a>. Note that ITK cannot write every format it can read (e.g. it can read Bruker 2dseq datasets, but it cannot write them).</p>
@@ -284,5 +316,5 @@ SPGR FILE was not specified. Use --help to see usage.
 
 <!--
 MkDocs version : 0.17.3
-Build Date UTC : 2018-03-23 21:43:13
+Build Date UTC : 2018-03-27 11:20:45
 -->
