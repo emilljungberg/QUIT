@@ -103,7 +103,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="https://github.com/spinicist/QUIT/edit/master/docs/Utilities.md"><i class="fa fa-github"></i> Edit on GitHub</a>
+                        <a href="https://github.com/spinicist/QUIT"><i class="fa fa-github"></i> GitHub</a>
                     </li>
             </ul>
         </div>
@@ -181,7 +181,7 @@
 <h2 id="qi_rfprofile">qi_rfprofile</h2>
 <p>This utility takes a B1+ (transmit field inhomogeneity) map, and reads an excitation slab profile from <code>stdin</code>. The two are multiplied together along the slab direction (assumed to be Z), to produce a relative flip-angle or B1 map.</p>
 <p><strong>Example Command Line</strong></p>
-<pre><code class="bash">qihdr b1plus_map.nii.gz output_b1_map.nii.gz &lt; input.txt
+<pre><code class="bash">qi_rfprofile b1plus_map.nii.gz output_b1_map.nii.gz &lt; input.txt
 </code></pre>
 
 <p><strong>Example Input File</strong></p>
